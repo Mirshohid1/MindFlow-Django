@@ -14,8 +14,7 @@ def path_to_avatar(instance, filename):
 class CustomUser(AbstractUser):
     CHOICES_ROLE = [
         ('user', 'User'),
-        ('admin', 'Admin'),
-        ('developer', 'Developer')
+        ('admin', 'Admin')
     ]
 
     email = models.EmailField(_("email address"), unique=True, null=True, blank=True)
@@ -32,7 +31,6 @@ class CustomUser(AbstractUser):
         if (current_date.month, current_date.day) < (self.birth_date.month, self.birth_date.day):
             age -= 1
         return age
-
 
     def clean(self):
         if self.username:
@@ -51,6 +49,9 @@ class CustomUser(AbstractUser):
         super().full_clean()
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"{self.username}: {self.role}"
+
 
 class SkillType(models.Model):
     name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
@@ -65,6 +66,9 @@ class SkillType(models.Model):
     def save(self, *args, **kwargs):
         super().full_clean()
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
 
 
 class Skill(models.Model):
@@ -82,6 +86,9 @@ class Skill(models.Model):
         super().full_clean()
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"{self.name}: {self.skill_type.name}"
+
 
 class ProfessionType(models.Model):
     name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
@@ -96,6 +103,9 @@ class ProfessionType(models.Model):
     def save(self, *args, **kwargs):
         super().full_clean()
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
 
 
 class Profession(models.Model):
@@ -114,6 +124,9 @@ class Profession(models.Model):
         super().full_clean()
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"{self.name}: {self.profession_type.name}"
+
 
 class UserSkill(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_skills', verbose_name=_("User"))
@@ -123,6 +136,9 @@ class UserSkill(models.Model):
     class Meta:
         unique_together = ('user', 'skill')
 
+    def __str__(self):
+        return f"{self.user.username}, skill: {self.skill.name}"
+
 
 class UserProfession(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_professions', verbose_name=_("User"))
@@ -131,3 +147,6 @@ class UserProfession(models.Model):
 
     class Meta:
         unique_together = ('user', 'profession')
+
+    def __str__(self):
+        return f"{self.user.username}, profession: {self.profession.name}"
