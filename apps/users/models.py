@@ -32,8 +32,15 @@ class Skill(models.Model):
     skill_type = models.ForeignKey(SkillType, on_delete=models.PROTECT, related_name='skills', verbose_name=_("Skill Type"))
 
 
+class ProfessionType(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
+    description = models.TextField(max_length=500, null=True, blank=True, verbose_name=_('Description'))
+
+
 class Profession(models.Model):
     name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
+    description = models.TextField(max_length=700, null=True, blank=True, verbose_name=_('Description'))
+    profession_type = models.ForeignKey(ProfessionType, on_delete=models.PROTECT, related_name='professions', verbose_name=_("Profession Type"))
     required_skills = models.ManyToManyField(Skill, related_name="professions", verbose_name=_("Required Skills"))
 
 
