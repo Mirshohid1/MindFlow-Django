@@ -2,6 +2,10 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser
 
+from core.utils import clean_text_for_unique_fields
+
+from datetime import date
+
 
 def path_to_avatar(instance, filename):
     return f"media/user_{instance.id}/avatar-{filename}"
@@ -20,10 +24,47 @@ class CustomUser(AbstractUser):
     role = models.CharField(max_length=10, choices=CHOICES_ROLE, default='user')
     birth_date = models.DateField()
 
+    def get_age(self):
+        if not self.birth_date:
+            return None
+        current_date = date.today()
+        age = current_date.year - self.birth_date.year
+        if (current_date.month, current_date.day) < (self.birth_date.month, self.birth_date.day):
+            age -= 1
+        return age
+
+
+    def clean(self):
+        if self.username:
+            self.username = clean_text_for_unique_fields(self.username)
+        if self.first_name:
+            self.first_name = clean_text_for_unique_fields(self.first_name)
+        if self.last_name:
+            self.last_name = clean_text_for_unique_fields(self.last_name)
+        if self.email:
+            self.email = clean_text_for_unique_fields(self.email)
+        if self.bio:
+            self.bio = clean_text_for_unique_fields(self.bio)
+        super().clean()
+
+    def save(self, *args, **kwargs):
+        super().full_clean()
+        super().save(*args, **kwargs)
+
 
 class SkillType(models.Model):
     name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
     description = models.TextField(max_length=500, null=True, blank=True, verbose_name=_('Description'))
+
+    def clean(self):
+        if self.name:
+            self.name = clean_text_for_unique_fields(self.name)
+        if self.description:
+            self.description = clean_text_for_unique_fields(self.description)
+
+    def save(self, *args, **kwargs):
+        super().full_clean()
+        super().save(*args, **kwargs)
 
 
 class Skill(models.Model):
@@ -31,10 +72,30 @@ class Skill(models.Model):
     description = models.TextField(max_length=500, null=True, blank=True, verbose_name=_('Description'))
     skill_type = models.ForeignKey(SkillType, on_delete=models.PROTECT, related_name='skills', verbose_name=_("Skill Type"))
 
+    def clean(self):
+        if self.name:
+            self.name = clean_text_for_unique_fields(self.name)
+        if self.description:
+            self.description = clean_text_for_unique_fields(self.description)
+
+    def save(self, *args, **kwargs):
+        super().full_clean()
+        super().save(*args, **kwargs)
+
 
 class ProfessionType(models.Model):
     name = models.CharField(max_length=255, unique=True, verbose_name=_("Name"))
     description = models.TextField(max_length=500, null=True, blank=True, verbose_name=_('Description'))
+
+    def clean(self):
+        if self.name:
+            self.name = clean_text_for_unique_fields(self.name)
+        if self.description:
+            self.description = clean_text_for_unique_fields(self.description)
+
+    def save(self, *args, **kwargs):
+        super().full_clean()
+        super().save(*args, **kwargs)
 
 
 class Profession(models.Model):
@@ -42,6 +103,16 @@ class Profession(models.Model):
     description = models.TextField(max_length=700, null=True, blank=True, verbose_name=_('Description'))
     profession_type = models.ForeignKey(ProfessionType, on_delete=models.PROTECT, related_name='professions', verbose_name=_("Profession Type"))
     required_skills = models.ManyToManyField(Skill, related_name="professions", verbose_name=_("Required Skills"))
+
+    def clean(self):
+        if self.name:
+            self.name = clean_text_for_unique_fields(self.name)
+        if self.description:
+            self.description = clean_text_for_unique_fields(self.description)
+
+    def save(self, *args, **kwargs):
+        super().full_clean()
+        super().save(*args, **kwargs)
 
 
 class UserSkill(models.Model):
