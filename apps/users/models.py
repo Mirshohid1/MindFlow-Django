@@ -21,7 +21,7 @@ class CustomUser(AbstractUser):
     avatar = models.ImageField(upload_to=path_to_avatar, null=True, blank=True, verbose_name=_("Avatar"))
     bio = models.TextField(null=True, blank=True, verbose_name=_("Bio"))
     role = models.CharField(max_length=10, choices=CHOICES_ROLE, default='user')
-    birth_date = models.DateField()
+    birth_date = models.DateField(null=True, blank=True)
 
     def get_age(self):
         if not self.birth_date:
@@ -87,7 +87,7 @@ class Skill(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name}: {self.skill_type.name}"
+        return f"{self.name}: {self.skill_type}"
 
 
 class ProfessionType(models.Model):
@@ -125,7 +125,7 @@ class Profession(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name}: {self.profession_type.name}"
+        return f"{self.name}: {self.profession_type}"
 
 
 class UserSkill(models.Model):
@@ -137,7 +137,7 @@ class UserSkill(models.Model):
         unique_together = ('user', 'skill')
 
     def __str__(self):
-        return f"{self.user.username}, skill: {self.skill.name}"
+        return f"{self.user}, skill: {self.skill}"
 
 
 class UserProfession(models.Model):
@@ -149,4 +149,4 @@ class UserProfession(models.Model):
         unique_together = ('user', 'profession')
 
     def __str__(self):
-        return f"{self.user.username}, profession: {self.profession.name}"
+        return f"{self.user}, profession: {self.profession}"
