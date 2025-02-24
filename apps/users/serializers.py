@@ -2,6 +2,8 @@ from typing import Dict, Any
 
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import CustomUser
 
 
@@ -46,3 +48,16 @@ class LoginSerializer(TokenObtainPairSerializer):
         })
 
         return data
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate(self, data):
+        try:
+            token = RefreshToken(data["refresh"])
+            token.blacklist()
+        except Exception:
+            raise serializers.ValidationError("Invalid token")
+
+        return {"message": "Logout completed"}
