@@ -4,7 +4,58 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import CustomUser
+from .models import (
+    CustomUser, UserSkill, UserProfession,
+    SkillType, Skill, ProfessionType, Profession
+)
+
+
+class SkillTypeSerializer(serializers.ModelSerializer):
+    pass
+
+
+class SkillTypeInputSerializer(serializers.ModelSerializer):
+    pass
+
+
+class SkillSerializer(serializers.ModelSerializer):
+    pass
+
+
+class SkillInputSerializer(serializers.ModelSerializer):
+    pass
+
+
+class ProfessionTypeSerializer(serializers.ModelSerializer):
+    pass
+
+
+class ProfessionTypeInputSerializer(serializers.ModelSerializer):
+    pass
+
+
+class ProfessionSerializer(serializers.ModelSerializer):
+    pass
+
+
+class ProfessionInputSerializer(serializers.ModelSerializer):
+    pass
+
+
+class UserSkillSerializer(serializers.ModelSerializer):
+    pass
+
+
+class UserSKillInputSerializer(serializers.ModelSerializer):
+    pass
+
+
+class UserProfessionSerializer(serializers.ModelSerializer):
+    pass
+
+
+class UserProfessionInputSerializer(serializers.ModelSerializer):
+    pass
 
 
 class RegisterSerializer(serializers.ModelSerializer):
