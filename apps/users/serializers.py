@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenBlacklistSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import (
@@ -11,51 +11,91 @@ from .models import (
 
 
 class SkillTypeSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = SkillType
+        fields = ('id', 'name', 'description')
 
 
 class SkillTypeInputSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = SkillType
+        fields = ('name', 'description')
 
 
 class SkillSerializer(serializers.ModelSerializer):
-    pass
+    skill_type = SkillTypeSerializer()
+    class Meta:
+        model = Skill
+        fields = ('id', 'name', 'description', 'skill_type')
 
 
 class SkillInputSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = Skill
+        fields = ('name', 'description', 'skill_type')
 
 
 class ProfessionTypeSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = ProfessionType
+        fields = ('id', 'name', 'description')
 
 
 class ProfessionTypeInputSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = ProfessionType
+        fields = ('name', 'description')
 
 
 class ProfessionSerializer(serializers.ModelSerializer):
-    pass
+    profession_type = ProfessionTypeSerializer()
+    required_skills = SkillSerializer(many=True)
+
+    class Meta:
+        model = Profession
+        fields = ('id', 'name', 'description', 'profession_type', 'required_skills')
 
 
 class ProfessionInputSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = Profession
+        fields = ('name', 'description', 'profession_type', 'required_skills')
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'username', 'email', 'role')
 
 
 class UserSkillSerializer(serializers.ModelSerializer):
-    pass
+    user = UserSerializer()
+    skill = SkillSerializer()
+
+    class Meta:
+        model = UserSkill
+        fields = ('id', 'user', 'skill', 'added_at')
 
 
 class UserSKillInputSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = UserSkill
+        fields = ('user', 'skill')
 
 
 class UserProfessionSerializer(serializers.ModelSerializer):
-    pass
+    user = UserSerializer()
+    profession = ProfessionSerializer()
+
+    class Meta:
+        model = UserProfession
+        fields = ('id', 'user', 'profession', 'assigned_at')
 
 
 class UserProfessionInputSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = UserProfession
+        fields = ('user', 'profession')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
