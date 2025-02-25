@@ -15,3 +15,28 @@ from users.serializers import (
     UserProfessionSerializer, UserProfessionInputSerializer,
     RegisterSerializer, LoginSerializer, LogoutSerializer
 )
+
+
+class SkillTypeViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = SkillType.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return SkillTypeInputSerializer
+        return SkillTypeSerializer
+
+    def perform_create(self, serializer):
+        if self.request.user.role != 'admin':
+            raise PermissionDenied("You do not have the rights to perform this action.")
+        serializer.save()
+
+    def perform_update(self, serializer):
+        if self.request.user.role != 'admin':
+            raise PermissionDenied("You do not have the rights to perform this action.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if self.request.user.role != 'admin':
+            raise PermissionDenied("You do not have the rights to perform this action.")
+        instance.delete()
