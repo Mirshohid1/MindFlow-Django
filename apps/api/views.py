@@ -1,4 +1,5 @@
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.generics import CreateAPIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -40,3 +41,35 @@ class SkillTypeViewSet(ModelViewSet):
         if self.request.user.role != 'admin':
             raise PermissionDenied("You do not have the rights to perform this action.")
         instance.delete()
+
+
+class SkillViewSet(ModelViewSet):
+    pass
+
+
+class ProfessionTypeViewSet(ModelViewSet):
+    pass
+
+
+class ProfessionViewSet(ModelViewSet):
+    pass
+
+
+class UserSkillViewSet(ModelViewSet):
+    pass
+
+
+class UserProfessionViewSet(ModelViewSet):
+    pass
+
+
+class RegisterView(CreateAPIView):
+    pass
+
+
+class LoginView(TokenObtainPairView):
+    pass
+
+
+class LogoutView(TokenBlacklistView):
+    pass
