@@ -69,7 +69,28 @@ class SkillViewSet(ModelViewSet):
 
 
 class ProfessionTypeViewSet(ModelViewSet):
-    pass
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = ProfessionType.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return ProfessionTypeInputSerializer
+        return ProfessionTypeSerializer
+
+    def perform_create(self, serializer):
+        if self.request.user.role != 'admin':
+            raise PermissionDenied("You do not have the rights to perform this action.")
+        serializer.save()
+
+    def perform_update(self, serializer):
+        if self.request.user.role != 'admin':
+            raise PermissionDenied("You do not have the rights to perform this action.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if self.request.user.role != 'admin':
+            raise PermissionDenied("You do not have the rights to perform this action.")
+        instance.delete()
 
 
 class ProfessionViewSet(ModelViewSet):
