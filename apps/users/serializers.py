@@ -10,6 +10,8 @@ from .models import (
 )
 
 
+### --- SKILL SERIALIZERS --- ###
+
 class SkillTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkillType
@@ -34,6 +36,8 @@ class SkillInputSerializer(serializers.ModelSerializer):
         model = Skill
         fields = ('name', 'description', 'skill_type')
 
+
+### --- PROFESSION SERIALIZERS --- ###
 
 class ProfessionTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,11 +66,15 @@ class ProfessionInputSerializer(serializers.ModelSerializer):
         fields = ('name', 'description', 'profession_type', 'required_skills')
 
 
+### --- USER SERIALIZERS --- ###
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('id', 'username', 'email', 'role')
 
+
+### --- USER-SKILL RELATION SERIALIZERS --- ###
 
 class UserSkillSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -83,6 +91,8 @@ class UserSKillInputSerializer(serializers.ModelSerializer):
         fields = ('skill', )
 
 
+### --- USER-PROFESSION RELATION SERIALIZERS --- ####
+
 class UserProfessionSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     profession = ProfessionSerializer()
@@ -97,6 +107,7 @@ class UserProfessionInputSerializer(serializers.ModelSerializer):
         model = UserProfession
         fields = ('profession', )
 
+### --- AUTH SERIALIZERS (REGISTER & LOGIN) --- ###
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
