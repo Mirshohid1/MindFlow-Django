@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import CreateAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -28,7 +29,15 @@ class BaseAdminViewSet(AdminPermissionMixin, ModelViewSet):
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
+            if not self.InputSerializer:
+                raise ValidationError(
+                    f"{self.__class__.__name__}: InputSerializer is not defined, but is required for {self.action}."
+                )
             return self.InputSerializer
+        if not self.OutputSerializer:
+            raise ValidationError(
+                f"{self.__class__.__name__}: OutputSerializer is not defined, but is required for {self.action}."
+            )
         return self.OutputSerializer
 
     def perform_create(self, serializer):
@@ -44,26 +53,11 @@ class BaseAdminViewSet(AdminPermissionMixin, ModelViewSet):
         instance.delete()
 
 
-class SkillTypeViewSet(AdminPermissionMixin, ModelViewSet):
+class SkillTypeViewSet(BaseAdminViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = SkillType.objects.all()
-
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return SkillTypeInputSerializer
-        return SkillTypeSerializer
-
-    def perform_create(self, serializer):
-        self.check_admin_permissions()
-        serializer.save()
-
-    def perform_update(self, serializer):
-        self.check_admin_permissions()
-        serializer.save()
-
-    def perform_destroy(self, instance):
-        self.check_admin_permissions()
-        instance.delete()
+    OutputSerializer = SkillTypeSerializer
+    InputSerializer = SkillTypeInputSerializer
 
 
 class SkillViewSet(AdminPermissionMixin, ModelViewSet):
