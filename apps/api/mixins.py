@@ -5,7 +5,7 @@ class AdminPermissionMixin:
     is_admin_required = True
 
     def check_admin_permissions(self):
-        if self.request.user.role != 'admin' and self.is_admin_required:
+        if getattr(self.request.user, "role", None) != "admin" and self.is_admin_required:
             raise PermissionDenied("You do not have the rights to perform this action.")
 
 
