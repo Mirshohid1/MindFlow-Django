@@ -18,7 +18,7 @@ from users.serializers import (
     ProfessionSerializer, ProfessionInputSerializer,
     UserSkillSerializer, UserSKillInputSerializer,
     UserProfessionSerializer, UserProfessionInputSerializer,
-    RegisterSerializer, LoginSerializer, LogoutSerializer
+    RegisterSerializer, LoginSerializer
 )
 
 
@@ -180,8 +180,27 @@ class RegisterView(CreateAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class LoginView(TokenObtainPairView):
-    pass
+    permission_classes = [AllowAny]
+    serializer_class = LoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            data = serializer.validated_data
+            return Response({
+                "token": data['token'],
+                "user": {
+                    "id": data['id'],
+                    "username": data['username'],
+                    "email": data['email'],
+                    "role": data['role']
+                }
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(TokenBlacklistView):
