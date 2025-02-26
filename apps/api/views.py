@@ -20,9 +20,10 @@ from users.serializers import (
     UserProfessionSerializer, UserProfessionInputSerializer,
     RegisterSerializer, LoginSerializer
 )
+from api.mixins import AdminPermissionMixin
 
 
-class SkillTypeViewSet(ModelViewSet):
+class SkillTypeViewSet(AdminPermissionMixin, ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = SkillType.objects.all()
 
@@ -32,18 +33,15 @@ class SkillTypeViewSet(ModelViewSet):
         return SkillTypeSerializer
 
     def perform_create(self, serializer):
-        if self.request.user.role != 'admin':
-            raise PermissionDenied("You do not have the rights to perform this action.")
+        self.check_admin_permissions()
         serializer.save()
 
     def perform_update(self, serializer):
-        if self.request.user.role != 'admin':
-            raise PermissionDenied("You do not have the rights to perform this action.")
+        self.check_admin_permissions()
         serializer.save()
 
     def perform_destroy(self, instance):
-        if self.request.user.role != 'admin':
-            raise PermissionDenied("You do not have the rights to perform this action.")
+        self.check_admin_permissions()
         instance.delete()
 
 
