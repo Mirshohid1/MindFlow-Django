@@ -1,4 +1,3 @@
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import CreateAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -20,7 +19,29 @@ from users.serializers import (
     UserProfessionSerializer, UserProfessionInputSerializer,
     RegisterSerializer, LoginSerializer
 )
-from api.mixins import AdminPermissionMixin
+from api.mixins import AdminPermissionMixin, UserPermissionMixin
+
+
+class BaseAdminViewSet(AdminPermissionMixin, ModelViewSet):
+    OutputSerializer = None
+    InputSerializer = None
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return self.InputSerializer
+        return self.OutputSerializer
+
+    def perform_create(self, serializer):
+        self.check_admin_permissions()
+        serializer.save()
+
+    def perform_update(self, serializer):
+        self.check_admin_permissions()
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        self.check_admin_permissions()
+        instance.delete()
 
 
 class SkillTypeViewSet(AdminPermissionMixin, ModelViewSet):
@@ -111,7 +132,7 @@ class ProfessionViewSet(AdminPermissionMixin, ModelViewSet):
         instance.delete()
 
 
-class UserSkillViewSet(ModelViewSet):
+class UserSkillViewSet(UserPermissionMixin, ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = UserSkill.objects.all()
 
@@ -124,17 +145,15 @@ class UserSkillViewSet(ModelViewSet):
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
-        if self.request.user != serializer.instance.user:
-            raise PermissionDenied("You can't update this object")
+        self.check_user_permissions(serializer.instance.user)
         serializer.save()
 
     def perform_destroy(self, instance):
-        if self.request.user != instance.user:
-            raise PermissionDenied("You can't destroy this object")
+        self.check_user_permissions(instance.user)
         instance.delete()
 
 
-class UserProfessionViewSet(ModelViewSet):
+class UserProfessionViewSet(UserPermissionMixin, ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Profession.objects.all()
 
@@ -147,13 +166,11 @@ class UserProfessionViewSet(ModelViewSet):
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
-        if self.request.user != serializer.instance.user:
-            raise PermissionDenied("You can't update this object")
+        self.check_user_permissions(serializer.instance.user)
         serializer.save()
 
     def perform_destroy(self, instance):
-        if self.request.user != instance.user:
-            raise PermissionDenied("You can't destroy this object")
+        self.check_user_permissions(instance.user)
         instance.delete()
 
 
