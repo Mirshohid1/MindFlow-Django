@@ -119,7 +119,26 @@ class ProfessionViewSet(ModelViewSet):
 
 
 class UserSkillViewSet(ModelViewSet):
-    pass
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = UserSkill.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return UserSKillInputSerializer
+        return UserSkillSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        if self.request.user != serializer.user:
+            raise PermissionDenied("You can't update this object")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if self.request.user != instance.user:
+            raise PermissionDenied("You can't destroy this object")
+        instance.delete()
 
 
 class UserProfessionViewSet(ModelViewSet):
