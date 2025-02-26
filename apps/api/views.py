@@ -23,7 +23,7 @@ from users.serializers import (
 from api.mixins import AdminPermissionMixin, UserPermissionMixin
 
 
-class BaseAdminViewSet(AdminPermissionMixin, ModelViewSet):
+class BaseViewSet(ModelViewSet):
     OutputSerializer = None
     InputSerializer = None
 
@@ -40,6 +40,8 @@ class BaseAdminViewSet(AdminPermissionMixin, ModelViewSet):
             )
         return self.OutputSerializer
 
+
+class BaseAdminViewSet(AdminPermissionMixin, BaseViewSet):
     def perform_create(self, serializer):
         self.check_admin_permissions()
         serializer.save()
