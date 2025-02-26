@@ -1,7 +1,9 @@
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import CreateAPIView
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistView
+from rest_framework_simplejwt.serializers import TokenBlacklistSerializer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAuthenticated
 from rest_framework import status
@@ -183,4 +185,14 @@ class LoginView(TokenObtainPairView):
 
 
 class LogoutView(TokenBlacklistView):
-    pass
+    permission_classes = [IsAuthenticated]
+    serializer_class = TokenBlacklistSerializer
+
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
