@@ -74,26 +74,11 @@ class ProfessionTypeViewSet(BaseAdminViewSet):
     InputSerializer = ProfessionTypeInputSerializer
 
 
-class ProfessionViewSet(AdminPermissionMixin, ModelViewSet):
+class ProfessionViewSet(BaseAdminViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Profession.objects.all()
-
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return ProfessionInputSerializer
-        return ProfessionSerializer
-
-    def perform_create(self, serializer):
-        self.check_admin_permissions()
-        serializer.save()
-
-    def perform_update(self, serializer):
-        self.check_admin_permissions()
-        serializer.save()
-
-    def perform_destroy(self, instance):
-        self.check_admin_permissions()
-        instance.delete()
+    OutputSerializer = ProfessionSerializer
+    InputSerializer = ProfessionInputSerializer
 
 
 class UserSkillViewSet(UserPermissionMixin, ModelViewSet):
