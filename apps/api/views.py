@@ -55,6 +55,19 @@ class BaseAdminViewSet(AdminPermissionMixin, BaseViewSet):
         instance.delete()
 
 
+class BaseUserViewSet(UserPermissionMixin, BaseViewSet):
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        self.check_user_permissions(serializer.instance.user)
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        self.check_user_permissions(instance.user)
+        instance.delete()
+
+
 class SkillTypeViewSet(BaseAdminViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = SkillType.objects.all()
@@ -83,46 +96,18 @@ class ProfessionViewSet(BaseAdminViewSet):
     InputSerializer = ProfessionInputSerializer
 
 
-class UserSkillViewSet(UserPermissionMixin, ModelViewSet):
+class UserSkillViewSet(BaseUserViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = UserSkill.objects.all()
-
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return UserSKillInputSerializer
-        return UserSkillSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def perform_update(self, serializer):
-        self.check_user_permissions(serializer.instance.user)
-        serializer.save()
-
-    def perform_destroy(self, instance):
-        self.check_user_permissions(instance.user)
-        instance.delete()
+    OutputSerializer = UserSkillSerializer
+    InputSerializer = UserSKillInputSerializer
 
 
-class UserProfessionViewSet(UserPermissionMixin, ModelViewSet):
+class UserProfessionViewSet(BaseUserViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Profession.objects.all()
-
-    def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
-            return UserProfessionInputSerializer
-        return UserProfessionSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def perform_update(self, serializer):
-        self.check_user_permissions(serializer.instance.user)
-        serializer.save()
-
-    def perform_destroy(self, instance):
-        self.check_user_permissions(instance.user)
-        instance.delete()
+    OutputSerializer = UserProfessionSerializer
+    InputSerializer = UserProfessionInputSerializer
 
 
 class RegisterView(CreateAPIView):
