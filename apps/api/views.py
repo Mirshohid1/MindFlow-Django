@@ -131,7 +131,7 @@ class UserSkillViewSet(ModelViewSet):
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
-        if self.request.user != serializer.user:
+        if self.request.user != serializer.instance.user:
             raise PermissionDenied("You can't update this object")
         serializer.save()
 
