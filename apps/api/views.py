@@ -1,8 +1,10 @@
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import CreateAPIView
+from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAuthenticated
+from rest_framework import status
 from users.models import (
     CustomUser, UserSkill, UserProfession,
     SkillType, Skill, ProfessionType, Profession
@@ -142,12 +144,30 @@ class UserSkillViewSet(ModelViewSet):
 
 
 class UserProfessionViewSet(ModelViewSet):
-    pass
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = Profession.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return UserProfessionInputSerializer
+        return UserProfessionSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        if self.request.user != serializer.instance.user:
+            raise PermissionDenied("You can't update this object")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if self.request.user != instance.user:
+            raise PermissionDenied("You can't destroy this object")
+        instance.delete()
 
 
 class RegisterView(CreateAPIView):
     pass
-
 
 class LoginView(TokenObtainPairView):
     pass
