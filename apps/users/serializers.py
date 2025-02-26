@@ -80,7 +80,7 @@ class UserSkillSerializer(serializers.ModelSerializer):
 class UserSKillInputSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSkill
-        fields = ('user', 'skill')
+        fields = ('skill', )
 
 
 class UserProfessionSerializer(serializers.ModelSerializer):
@@ -95,7 +95,7 @@ class UserProfessionSerializer(serializers.ModelSerializer):
 class UserProfessionInputSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfession
-        fields = ('user', 'profession')
+        fields = ('profession', )
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -139,16 +139,3 @@ class LoginSerializer(TokenObtainPairSerializer):
         })
 
         return data
-
-
-class LogoutSerializer(serializers.Serializer):
-    refresh = serializers.CharField()
-
-    def validate(self, data):
-        try:
-            token = RefreshToken(data["refresh"])
-            token.blacklist()
-        except Exception:
-            raise serializers.ValidationError("Invalid token")
-
-        return {"message": "Logout completed"}
