@@ -1,3 +1,13 @@
+from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_simplejwt.serializers import TokenBlacklistSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistView
+from rest_framework import status
+
+from users.serializers import RegisterSerializer, LoginSerializer
+
+
 class RegisterView(CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
