@@ -176,7 +176,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data['password'] != data['password_confirm']:
-            return serializers.ValidationError({'password_confirm': "Passwords don't match!"})
+            raise serializers.ValidationError({'password_confirm': "Passwords don't match!"})
         return data
 
     def create(self, validated_data):
@@ -197,7 +197,7 @@ class LoginSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, str]:
-        data = super().validated_data(attrs)
+        data = super().validate(attrs)
 
         data.update({
             'id': self.user.id,
