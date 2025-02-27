@@ -15,11 +15,9 @@ class RegisterView(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response({"detail": "User registered successfully."}, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.create(serializer.validated_data)
+        return Response({"detail": "User registered successfully."}, status=status.HTTP_201_CREATED)
 
 
 class LoginView(TokenObtainPairView):
