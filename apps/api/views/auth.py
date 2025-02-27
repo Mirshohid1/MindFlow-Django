@@ -30,7 +30,8 @@ class LoginView(TokenObtainPairView):
             serializer.is_valid(raise_exception=True)
             data = serializer.validated_data
             return Response({
-                "token": data['token'],
+                "access_token": data['access'],
+                "refresh_token": data['refresh'],
                 "user": {
                     "id": data['id'],
                     "username": data['username'],
