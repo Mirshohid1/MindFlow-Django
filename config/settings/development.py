@@ -1,4 +1,4 @@
-from .base import *  # noqa
+from .basic import *  # noqa
 
 ALLOWED_HOSTS = ["*"]
 DEBUG = True
