@@ -34,13 +34,13 @@ class ConfirmEmailView(APIView):
         confirmation_code = request.data.get("confirmation_code")
 
         if not confirmation_code:
-            return Response({"detail": "Код подтверждения обязателен."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "The confirmation code is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         if user.confirmation_code != confirmation_code:
-            return Response({"detail": "Неверный код подтверждения."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Invalid confirmation code."}, status=status.HTTP_400_BAD_REQUEST)
 
         user.is_email_verified = True
         user.confirmation_code = None  # Удаляем код после подтверждения
         user.save()
 
-        return Response({"detail": "Email успешно подтвержден!"}, status=status.HTTP_200_OK)
+        return Response({"detail": "Email has been successfully confirmed!"}, status=status.HTTP_200_OK)
