@@ -22,6 +22,7 @@ class CustomUser(AbstractUser):
     bio = models.TextField(null=True, blank=True, verbose_name=_("Bio"))
     role = models.CharField(max_length=10, choices=CHOICES_ROLE, default='user')
     birth_date = models.DateField(null=True, blank=True)
+    is_email_verified = models.BooleanField(default=False)
 
     def get_age(self):
         if not self.birth_date:
